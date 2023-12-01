@@ -1,0 +1,4 @@
+BasedOnStyle: Google
+DerivePointerAlignment: false
+ColumnLimit: 100
+IfMacros: ['IF', 'IF_NOT', 'ELSE', 'ELSE_IF']
