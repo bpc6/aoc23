@@ -1,7 +1,2 @@
-project(Day01)
-
-# Add executable for puzzle1
 add_executable(day01 src/main.cpp)
-
-# Add unit tests for puzzle1
-add_subdirectory(tests)
+target_include_directories(day01 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
