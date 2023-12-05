@@ -35,6 +35,24 @@ bool game_is_possible(const std::string& game_string) {
   return true;
 }
 
+int game_power(const std::string& game_string) {
+  int maxR = -1, maxG = -1, maxB = -1;
+  for (const std::string& round_string : split(game_string, ';')) {
+    for (const std::string& color_count : split(round_string, ',')) {
+      std::vector<std::string> seq = split(color_count, ' ');
+      int num_color = stoi(seq[1]);
+      if (seq[2] == "blue" and num_color > maxB) {
+        maxB = num_color;
+      } else if (seq[2] == "green" and num_color > maxG) {
+        maxG = num_color;
+      } else if (seq[2] == "red" and num_color > maxR) {
+        maxR = num_color;
+      }
+    }
+  }
+  return maxR * maxG * maxB;
+}
+
 int main() {
   std::vector<std::string> lines = readLines("input/input.txt");
   int count = 1;
@@ -45,6 +63,11 @@ int main() {
     }
     count++;
   }
+  std::cout << sum << std::endl;
 
+  sum = 0;
+  for (const std::string& line : lines) {
+    sum += game_power(split(line, ':')[1]);
+  }
   std::cout << sum << std::endl;
 }
