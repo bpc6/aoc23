@@ -1,19 +1,7 @@
 #include <iostream>
-#include <sstream>
 #include <vector>
 
-#include "read_lines.h"
-
-std::vector<std::string> split(const std::string& s, char delim) {
-  std::vector<std::string> result;
-  std::stringstream ss(s);
-  std::string item;
-
-  while (getline(ss, item, delim)) {
-    result.push_back(item);
-  }
-  return result;
-}
+#include "utils.h"
 
 bool game_is_possible(const std::string& game_string) {
   for (const std::string& round_string : split(game_string, ';')) {

@@ -1,6 +1,7 @@
-#include "read_lines.h"
+#include "utils.h"
 
 #include <fstream>
+#include <sstream>
 
 std::vector<std::string> readLines(const std::string& file_path) {
   std::ifstream file(file_path);
@@ -16,4 +17,15 @@ std::vector<std::string> readLines(const std::string& file_path) {
   }
   file.close();
   return lines;
+}
+
+std::vector<std::string> split(const std::string& s, char delim) {
+  std::vector<std::string> result;
+  std::stringstream ss(s);
+  std::string item;
+
+  while (getline(ss, item, delim)) {
+    result.push_back(item);
+  }
+  return result;
 }
