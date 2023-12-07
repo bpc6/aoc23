@@ -16,12 +16,24 @@ std::function<uint64_t(uint64_t)> chainFunctions(
 
 std::function<uint64_t(uint64_t)> createMapper(const std::string& txt) {
   std::vector<std::string> lines = split(txt, '\n');
-  return [lines](uint64_t input) {
-    for (int i = 1; i < lines.size(); i++) {
-      std::vector<std::string> numStrs = split(lines[i], ' ');
-      uint64_t destStart = std::stoull(numStrs[0]);
-      uint64_t sourceStart = std::stoull(numStrs[1]);
-      uint64_t rangeLen = std::stoull(numStrs[2]);
+  std::vector<std::vector<uint64_t>> table;
+  for (const std::string& line : lines) {
+    if (isdigit(line.at(0))) {
+      std::vector<std::string> numStrs = split(line, ' ');
+      std::vector<uint64_t> nums;
+      nums.reserve(numStrs.size());
+      for (const std::string& numStr : numStrs) {
+        nums.push_back(std::stoull(numStr));
+      }
+      table.push_back(nums);
+    }
+  }
+
+  return [table](uint64_t input) {
+    for (auto row : table) {
+      uint64_t destStart = row[0];
+      uint64_t sourceStart = row[1];
+      uint64_t rangeLen = row[2];
       if (input >= sourceStart and input < sourceStart + rangeLen) {
         return input + destStart - sourceStart;
       }
@@ -30,14 +42,34 @@ std::function<uint64_t(uint64_t)> createMapper(const std::string& txt) {
   };
 }
 
-std::vector<uint64_t> basicSeedStrategy(const std::string& seedNumString) {
-  auto strNums = split(seedNumString, ' ');
-  std::vector<uint64_t> seeds;
-  seeds.reserve(strNums.size());
-  for (const std::string& strNum : strNums) {
-    seeds.push_back(std::stoull(strNum));
+uint64_t p1MinLocation(std::vector<std::string> strNums,
+                       const std::function<uint64_t(uint64_t)>& findLocation) {
+  auto minLocation = uint64_t(-1);
+  for (int i = 0; i < strNums.size(); i++) {
+    uint64_t seed = std::stoull(strNums[i]);
+    uint64_t location = findLocation(seed);
+    if (location < minLocation) {
+      minLocation = location;
+    }
   }
-  return seeds;
+  return minLocation;
+}
+
+uint64_t p2MinLocation(std::vector<std::string> strNums,
+                       const std::function<uint64_t(uint64_t)>& findLocation) {
+  auto minLocation = uint64_t(-1);
+  for (int i = 0; i < strNums.size(); i++) {
+    std::cout << i << "/" << strNums.size() << std::endl;
+    uint64_t start = std::stoull(strNums[i]);
+    uint64_t numSeeds = std::stoull(strNums[++i]);
+    for (uint64_t seed = start; seed < start + numSeeds; seed++) {
+      uint64_t location = findLocation(seed);
+      if (location < minLocation) {
+        minLocation = location;
+      }
+    }
+  }
+  return minLocation;
 }
 
 int main() {
@@ -50,15 +82,10 @@ int main() {
   }
   auto findLocation = chainFunctions(functions);
   std::string numsStr = split(txtGroups[0], ": ")[1];
+  auto strNums = split(numsStr, ' ');
 
-  std::vector<uint64_t> seeds = basicSeedStrategy(numsStr);
-  auto minLocation = uint64_t(-1);
-  for (const uint64_t seed : seeds) {
-    uint64_t location = findLocation(seed);
-    if (location < minLocation) {
-      minLocation = location;
-    }
-  }
+  uint64_t minLocation = p2MinLocation(strNums, findLocation);
+
   std::cout << "day05" << std::endl;
   std::cout << minLocation << std::endl;
 }
