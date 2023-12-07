@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <numeric>
 #include <vector>
 
 #include "utils.h"
@@ -45,8 +46,20 @@ int p1(const std::vector<std::string>& lines) {
   return sum;
 }
 
+int p2(const std::vector<std::string>& lines) {
+  std::vector<int> counter(lines.size(), 1);
+  for (int i = 0; i < lines.size(); i++) {
+    std::string numbers = split(lines[i], ':')[1];
+    int matches = numMatches(numbers);
+    for (int counterIdx = i + 1; counterIdx < i + 1 + matches; counterIdx++) {
+      counter[counterIdx] += counter[i];
+    }
+  }
+  return std::accumulate(counter.begin(), counter.end(), 0);
+}
+
 int main() {
   std::vector<std::string> lines = readLines("input/input.txt");
-  int soln1 = p1(lines);
-  std::cout << soln1 << std::endl;
+  std::cout << p1(lines) << std::endl;
+  std::cout << p2(lines) << std::endl;
 }
