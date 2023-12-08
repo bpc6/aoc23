@@ -1,6 +1,7 @@
 #include "utils.h"
 
 #include <fstream>
+#include <iterator>
 #include <sstream>
 
 std::string readFile(const std::string& file_path) {
@@ -69,4 +70,11 @@ std::vector<std::string> split(const std::string& s, const std::string& delimite
 
   res.push_back(s.substr(pos_start));
   return res;
+}
+
+std::vector<std::string> split(std::string const& input) {
+  std::istringstream buffer(input);
+  std::vector<std::string> ret((std::istream_iterator<std::string>(buffer)),
+                               std::istream_iterator<std::string>());
+  return ret;
 }
