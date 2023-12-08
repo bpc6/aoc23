@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include <algorithm>
 #include <fstream>
 #include <iterator>
 #include <sstream>
@@ -44,6 +45,17 @@ std::vector<std::vector<char>> readCharMatrix(const std::string& file_path) {
   }
   file.close();
   return mat;
+}
+
+std::vector<int> ints(const std::string& s) {
+  std::vector<int> ret;
+  for (const std::string& word : split(s)) {
+    if (word.end() == std::find_if(word.begin(), word.end(),
+                                   [](unsigned char c) -> bool { return !isdigit(c); })) {
+      ret.push_back(stoi(word));
+    }
+  }
+  return ret;
 }
 
 std::vector<std::string> split(const std::string& s, char delim) {
