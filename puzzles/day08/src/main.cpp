@@ -20,41 +20,11 @@ bool allAtZ(const std::vector<std::string>& strings) {
   return true;
 }
 
-struct Direction {
-  std::string left;
-  std::string right;
-};
-
-uint stepsToAllZ(const std::string& instructions, std::unordered_map<std::string, Direction> map,
-                 std::vector<std::string>& curr) {
-  uint steps = 0;
-  int instructionIdx = 0;
-  auto instructSize = instructions.size();
-  while (!allAtZ(curr)) {
-    char c = instructions[instructionIdx++ % instructSize];
-    if (c == 'L') {
-      for (auto& currStr : curr) {
-        currStr = map[currStr].left;
-      }
-    } else {
-      for (auto& currStr : curr) {
-        currStr = map[currStr].right;
-      }
-    }
-    steps++;
-
-    //    if (steps >= 1000000) {
-    //      return steps;
-    //    }
-  }
-  return steps;
-}
-
 int main() {
   std::vector<std::string> lines = readLines("input/test2.txt");
   std::string instructions = lines[0];
 
-  std::unordered_map<std::string, Direction> map;
+  std::unordered_map<std::string, std::unordered_map<char, std::string>> map;
   map.reserve(lines.size() - 2);
 
   std::vector<std::string> curr;
@@ -68,10 +38,19 @@ int main() {
     auto splitOnComma = split(splitOnEq[1], ',');
     std::string left = alphaOnly(splitOnComma[0]);
     std::string right = alphaOnly(splitOnComma[1]);
-    map[key] = {left, right};
+    map[key] = {{'L', left}, {'R', right}};
   }
 
-  uint steps = stepsToAllZ(instructions, map, curr);
+  int steps = 0;
+  int instructionIdx = 0;
+  auto instructSize = instructions.size();
+  while (!allAtZ(curr)) {
+    char c = instructions[instructionIdx++ % instructSize];
+    for (auto& currStr : curr) {
+      currStr = map[currStr][c];
+    }
+    steps++;
+  }
   std::cout << steps << std::endl;
   std::cout << "day08" << std::endl;
 }
