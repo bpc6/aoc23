@@ -1,3 +1,3 @@
-add_executable(day07 src/main.cpp)
+add_executable(day07 src/main.cpp src/hand.cpp)
 target_include_directories(day07 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(day07 PRIVATE aoc_lib)
