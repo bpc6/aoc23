@@ -78,3 +78,20 @@ std::vector<std::string> split(std::string const& input) {
                                std::istream_iterator<std::string>());
   return ret;
 }
+
+std::string join(const std::vector<std::string>& v, char c) {
+  std::string s;
+  for (auto p = v.begin(); p != v.end(); ++p) {
+    s += *p;
+    if (p != v.end() - 1) s += c;
+  }
+  return s;
+}
+
+std::string join(const std::vector<std::string>& v) {
+  std::string s;
+  for (const auto& p : v) {
+    s += p;
+  }
+  return s;
+}
