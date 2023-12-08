@@ -4,11 +4,12 @@
 #include <stdexcept>
 #include <unordered_map>
 
-std::unordered_map<char, int> VALUES = {{'T', 10}, {'J', 11}, {'Q', 12}, {'K', 13}, {'A', 14}};
+std::unordered_map<char, int> VALUES = {{'T', 10}, {'J', 1}, {'Q', 12}, {'K', 13}, {'A', 14}};
 
 Hand::Hand(const std::string& cardString, int bid) : bid(bid) {
   cards.clear();
   std::vector<std::vector<char>> scorer(5, std::vector<char>());
+  int jCount = 0;
   for (const char& c : cardString) {
     int value;
     if (isdigit(c)) {
@@ -18,16 +19,23 @@ Hand::Hand(const std::string& cardString, int bid) : bid(bid) {
     }
     cards.push_back(value);
 
-    for (std::vector<char>& place : scorer) {
-      if (place.empty() or place.back() == c) {
-        place.push_back(c);
-        break;
+    if (c == 'J') {
+      jCount++;
+    } else {
+      for (std::vector<char>& place : scorer) {
+        if (place.empty() or place.back() == c) {
+          place.push_back(c);
+          break;
+        }
       }
     }
   }
   std::sort(
       scorer.begin(), scorer.end(),
       [](const std::vector<char>& a, const std::vector<char>& b) { return b.size() < a.size(); });
+  for (int i = 0; i < jCount; i++) {
+    scorer[0].push_back('J');
+  }
   if (scorer[0].size() == 5) {
     handType = 6;
   } else if (scorer[0].size() == 4) {
