@@ -29,11 +29,26 @@ std::function<uint64_t(uint64_t)> createMapper(const std::string& txt) {
     }
   }
 
-  return [table](uint64_t input) {
-    for (auto row : table) {
-      uint64_t destStart = row[0];
-      uint64_t sourceStart = row[1];
-      uint64_t rangeLen = row[2];
+  std::vector<std::vector<uint64_t>>::size_type ydim = table.size();
+  std::vector<uint64_t>::size_type xdim = table[0].size();
+  // allocate memory for the array
+  auto** arr = new uint64_t*[ydim];
+  for (std::size_t i = 0; i < ydim; ++i) {
+    arr[i] = new uint64_t[xdim];
+  }
+
+  // copy the data from the vector to the array
+  for (std::size_t i = 0; i < ydim; ++i) {
+    for (std::size_t j = 0; j < xdim; ++j) {
+      arr[i][j] = table[i][j];
+    }
+  }
+
+  return [arr, ydim](uint64_t input) {
+    for (std::size_t yidx = 0; yidx < ydim; yidx++) {
+      uint64_t destStart = arr[yidx][0];
+      uint64_t sourceStart = arr[yidx][1];
+      uint64_t rangeLen = arr[yidx][2];
       if (input >= sourceStart and input < sourceStart + rangeLen) {
         return input + destStart - sourceStart;
       }
@@ -45,8 +60,8 @@ std::function<uint64_t(uint64_t)> createMapper(const std::string& txt) {
 uint64_t p1MinLocation(std::vector<std::string> strNums,
                        const std::function<uint64_t(uint64_t)>& findLocation) {
   auto minLocation = uint64_t(-1);
-  for (int i = 0; i < strNums.size(); i++) {
-    uint64_t seed = std::stoull(strNums[i]);
+  for (const auto& strNum : strNums) {
+    uint64_t seed = std::stoull(strNum);
     uint64_t location = findLocation(seed);
     if (location < minLocation) {
       minLocation = location;
