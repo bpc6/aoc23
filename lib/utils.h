@@ -12,5 +12,7 @@ std::vector<std::string> split(const std::string& s, const std::string& delimite
 std::vector<std::string> split(std::string const& input);
 std::string join(const std::vector<std::string>& v, char c);
 std::string join(const std::vector<std::string>& v);
+uint64_t gcd(uint64_t a, uint64_t b);
+uint64_t lcd(uint64_t a, uint64_t b);
 
 #endif  // AOC23_UTILS_H

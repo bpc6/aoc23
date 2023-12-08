@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <vector>
 
 #include "utils.h"
@@ -11,29 +12,20 @@ std::string alphaOnly(std::string s) {
   return s;
 }
 
-bool allAtZ(const std::vector<std::string>& strings) {
-  for (std::string s : strings) {
-    if (s.back() != 'Z') {
-      return false;
-    }
-  }
-  return true;
-}
-
 int main() {
-  std::vector<std::string> lines = readLines("input/test2.txt");
+  std::vector<std::string> lines = readLines("input/input.txt");
   std::string instructions = lines[0];
 
   std::unordered_map<std::string, std::unordered_map<char, std::string>> map;
   map.reserve(lines.size() - 2);
 
-  std::vector<std::string> curr;
+  std::vector<std::string> start;
   auto lineIter = lines.begin();
   for (advance(lineIter, 2); lineIter != lines.end(); ++lineIter) {
     auto splitOnEq = split(*lineIter, " = ");
     std::string key = splitOnEq[0];
     if (key.back() == 'A') {
-      curr.push_back(key);
+      start.push_back(key);
     }
     auto splitOnComma = split(splitOnEq[1], ',');
     std::string left = alphaOnly(splitOnComma[0]);
@@ -41,16 +33,22 @@ int main() {
     map[key] = {{'L', left}, {'R', right}};
   }
 
-  int steps = 0;
-  int instructionIdx = 0;
-  auto instructSize = instructions.size();
-  while (!allAtZ(curr)) {
-    char c = instructions[instructionIdx++ % instructSize];
-    for (auto& currStr : curr) {
-      currStr = map[currStr][c];
+  std::vector<int> stepCounts;
+  for (auto curr : start) {
+    int steps = 0;
+    int instructionIdx = 0;
+    while (curr.back() != 'Z') {
+      char c = instructions[instructionIdx++ % instructions.size()];
+      curr = map[curr][c];
+      steps++;
     }
-    steps++;
+    stepCounts.push_back(steps);
   }
-  std::cout << steps << std::endl;
+
+  uint64_t total = 1;
+  for (int count : stepCounts) {
+    total = lcd(total, count);
+  }
+  std::cout << total << std::endl;
   std::cout << "day08" << std::endl;
 }
