@@ -50,8 +50,9 @@ std::vector<std::vector<char>> readCharMatrix(const std::string& file_path) {
 std::vector<int> ints(const std::string& s) {
   std::vector<int> ret;
   for (const std::string& word : split(s)) {
-    if (word.end() == std::find_if(word.begin(), word.end(),
-                                   [](unsigned char c) -> bool { return !isdigit(c); })) {
+    if (!word.empty() &&
+        (word[0] == '-' ||
+         std::all_of(word.begin(), word.end(), [](unsigned char c) { return isdigit(c); }))) {
       ret.push_back(stoi(word));
     }
   }
