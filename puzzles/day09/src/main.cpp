@@ -20,7 +20,7 @@ int extrapolate(std::vector<int> sequence) {
     return sequence.back();
   }
   int difExtrap = extrapolate(dif);
-  return sequence.back() + difExtrap;
+  return sequence.front() - difExtrap;
 }
 
 int main() {
@@ -30,5 +30,4 @@ int main() {
     sum += extrapolate(ints(line));
   }
   std::cout << sum << std::endl;
-  std::cout << "day09" << std::endl;
 }
