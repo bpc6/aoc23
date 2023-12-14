@@ -59,6 +59,18 @@ std::vector<int> ints(const std::string& s) {
   return ret;
 }
 
+std::vector<int> ints(const std::string& s, char sep) {
+  std::vector<int> ret;
+  for (const std::string& word : split(s, sep)) {
+    if (!word.empty() &&
+        (word[0] == '-' ||
+         std::all_of(word.begin(), word.end(), [](unsigned char c) { return isdigit(c); }))) {
+      ret.push_back(stoi(word));
+    }
+  }
+  return ret;
+}
+
 std::vector<std::string> split(const std::string& s, char delim) {
   std::vector<std::string> result;
   std::stringstream ss(s);
