@@ -1,12 +1,13 @@
 #include <algorithm>
 #include <iostream>
+#include <limits>
 #include <map>
 
 #include "utils.h"
 
-using optionsType = std::map<std::pair<int, int>, int>;
+using optionsType = std::map<std::pair<int, int>, long int>;
 
-void insertOrIncreasePerm(optionsType& options, const std::pair<int, int>& key, int perm) {
+void insertOrIncreasePerm(optionsType& options, const std::pair<int, int>& key, long int perm) {
   auto it = options.find(key);
   if (it != options.end()) {
     it->second += perm;
@@ -15,7 +16,7 @@ void insertOrIncreasePerm(optionsType& options, const std::pair<int, int>& key, 
   }
 }
 
-int countOptions(const std::string& springs, const std::vector<int>& nums) {
+long int countOptions(const std::string& springs, const std::vector<int>& nums) {
   optionsType options = {{std::make_pair(0, 0), 1}};
   for (char c : springs) {
     optionsType next;
@@ -39,20 +40,28 @@ int countOptions(const std::string& springs, const std::vector<int>& nums) {
   return options[{nums.size(), 0}];
 }
 
-int countOptions(const std::string& line) {
+long int countOptions(const std::string& line) {
   auto lineParts = split(line);
-  std::string springs = lineParts[0] + '.';
-  auto nums = ints(lineParts[1], ',');
+  std::string springsBase = lineParts[0];
+  std::string springs = springsBase;
+  auto numsBase = ints(lineParts[1], ',');
+  std::vector<int> nums = numsBase;
+  for (int i = 0; i < 4; i++) {
+    springs += '?' + springsBase;
+    std::copy(numsBase.begin(), numsBase.end(), std::back_inserter(nums));
+  }
+  springs += '.';
 
   return countOptions(springs, nums);
 }
 
 int main() {
   auto lines = readLines("input/input.txt");
-  int sum = 0;
+  long int sum = 0;
   for (const auto& line : lines) {
-    int options = countOptions(line);
+    long int options = countOptions(line);
     sum += options;
   }
   std::cout << sum << std::endl;
+  std::cout << std::numeric_limits<long int>::max() << std::endl;
 }
