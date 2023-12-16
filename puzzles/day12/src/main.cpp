@@ -21,15 +21,11 @@ int countOptions(const std::string& springs, const std::vector<int>& nums) {
     optionsType next;
     for (auto& [key, perms] : options) {
       auto& [group, amount] = key;
-      if (group == nums.size()) {
-        insertOrIncreasePerm(next, key, perms);
-        continue;
-      }
       if (c == '.' || c == '?') {
-        if (amount == nums[group]) {
-          insertOrIncreasePerm(next, {group + 1, 0}, perms);
-        } else if (amount == 0) {
+        if (amount == 0) {
           insertOrIncreasePerm(next, {group, amount}, perms);
+        } else if (amount == nums[group]) {
+          insertOrIncreasePerm(next, {group + 1, 0}, perms);
         }
       }
       if (c == '#' || c == '?') {
