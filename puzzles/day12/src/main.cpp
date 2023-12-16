@@ -1,63 +1,51 @@
 #include <algorithm>
 #include <iostream>
-#include <vector>
+#include <map>
 
 #include "utils.h"
 
-bool isValid(std::string springs, const std::vector<int>& nums) {
-  springs += '.';
-  auto numPtr = nums.begin();
-  char last = '.';
-  int springCount = 0;
-  int qCount = 0;
-  for (char c : springs) {
-    if (c == '#') {
-      springCount++;
-    } else if (c == '?') {
-      qCount++;
-    } else if (c == '.' && last != '.') {
-      if (*numPtr > springCount + qCount) {
-        return false;
-      }
-      springCount = 0;
-      qCount = 0;
-      numPtr++;
-    }
+using optionsType = std::map<std::pair<int, int>, int>;
 
-    if (springCount > *numPtr) {
-      return false;
-    }
-    if (qCount + springCount > *numPtr) {
-      return true;
-    }
-    last = c;
+void insertOrIncreasePerm(optionsType& options, const std::pair<int, int>& key, int perm) {
+  auto it = options.find(key);
+  if (it != options.end()) {
+    it->second += perm;
+  } else {
+    options[key] = perm;
   }
-  return numPtr == nums.end();
 }
 
-int countOptions(std::string springs, const std::vector<int>& nums) {
-  if (!isValid(springs, nums)) {
-    return 0;
-  }
-  std::string strCpy = springs;
-  std::replace(strCpy.begin(), strCpy.end(), '?', '.');
-  if (isValid(strCpy, nums)) {
-    return 1;
-  }
-  int qCount = 0;
-  for (int i = 0; i < springs.size(); i++) {
-    if (springs[i] == '?') {
-      springs[i] = '#';
-      qCount += countOptions(springs, nums);
-      springs[i] = '.';
+int countOptions(const std::string& springs, const std::vector<int>& nums) {
+  optionsType options = {{std::make_pair(0, 0), 1}};
+  for (char c : springs) {
+    optionsType next;
+    for (auto& [key, perms] : options) {
+      auto& [group, amount] = key;
+      if (group == nums.size()) {
+        insertOrIncreasePerm(next, key, perms);
+        continue;
+      }
+      if (c == '.' || c == '?') {
+        if (amount == nums[group]) {
+          insertOrIncreasePerm(next, {group + 1, 0}, perms);
+        } else if (amount == 0) {
+          insertOrIncreasePerm(next, {group, amount}, perms);
+        }
+      }
+      if (c == '#' || c == '?') {
+        if (amount < nums[group]) {
+          insertOrIncreasePerm(next, {group, amount + 1}, perms);
+        }
+      }
     }
+    options = next;
   }
-  return qCount;
+  return options[{nums.size(), 0}];
 }
 
 int countOptions(const std::string& line) {
   auto lineParts = split(line);
-  std::string springs = lineParts[0];
+  std::string springs = lineParts[0] + '.';
   auto nums = ints(lineParts[1], ',');
 
   return countOptions(springs, nums);
@@ -68,7 +56,6 @@ int main() {
   int sum = 0;
   for (const auto& line : lines) {
     int options = countOptions(line);
-    std::cout << options << std::endl;
     sum += options;
   }
   std::cout << sum << std::endl;
